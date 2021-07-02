@@ -5,6 +5,7 @@ from keras.models import Sequential
 from keras.layers import Dense, Dropout, Flatten
 from keras.layers import Conv2D, MaxPooling2D
 import time
+
 os.environ['KMP_DUPLICATE_LIB_OK'] = 'True'
 
 Input_shape = (28, 28, 1)
@@ -15,9 +16,7 @@ def get_dataset():
 
     # скачиваем данные и разделяем на надор для обучения и тестов
     (x_train, y_train), (x_test, y_test) = mnist.load_data()
-
-    print(x_train.shape, y_train.shape)
-
+    validation_size = int(len(x_train)/len(x_test))
     x_train = x_train.reshape(x_train.shape[0], 28, 28, 1)
     x_test = x_test.reshape(x_test.shape[0], 28, 28, 1)
 
@@ -30,7 +29,10 @@ def get_dataset():
     x_train /= 255
     x_test /= 255
 
-    return (x_train, y_train), (x_test, y_test)
+    x_validation = x_train[::validation_size]
+    y_validation = y_train[::validation_size]
+
+    return (x_train, y_train), (x_test, y_test), (x_validation, y_validation)
 
 
 
@@ -55,9 +57,9 @@ def convolutional_neural_network_model():
 
 if __name__ == "__main__":
     start_time = time.time()
-    (x_train, y_train), (x_test, y_test) = get_dataset()
+    (x_train, y_train), (x_test, y_test), (x_validation, y_validation) = get_dataset()
     model = convolutional_neural_network_model()
-    hist = model.fit(x_train, y_train, batch_size=128, epochs=5, verbose=1, validation_data=(x_test, y_test))
+    hist = model.fit(x_train, y_train, batch_size=128, epochs=10, verbose=1, validation_data=(x_validation, y_validation))
     print("Модель успешно обучена")
 
     model.save('mnist.h5')
