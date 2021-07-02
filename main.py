@@ -16,7 +16,6 @@ def get_dataset():
 
     # скачиваем данные и разделяем на надор для обучения и тестов
     (x_train, y_train), (x_test, y_test) = mnist.load_data()
-    validation_size = int(len(x_train)/len(x_test))
     x_train = x_train.reshape(x_train.shape[0], 28, 28, 1)
     x_test = x_test.reshape(x_test.shape[0], 28, 28, 1)
 
@@ -29,8 +28,11 @@ def get_dataset():
     x_train /= 255
     x_test /= 255
 
-    x_validation = x_train[::validation_size]
-    y_validation = y_train[::validation_size]
+    x_validation = x_train[:10000:]
+    y_validation = y_train[:10000:]
+
+    x_train = x_train[10000::]
+    y_train = y_train[10000::]
 
     return (x_train, y_train), (x_test, y_test), (x_validation, y_validation)
 
